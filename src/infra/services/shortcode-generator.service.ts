@@ -3,16 +3,16 @@ import type { IShortCodeGeneratorService } from '@/domain/ports/services/short-c
 import { RedisClientService } from '../cache/redis/redis-client';
 
 export class RedisShortCodeGenerator implements IShortCodeGeneratorService {
-    private client: RedisClientType;
+  private client: RedisClientType;
 
-    constructor() {
-        const instance = RedisClientService.getInstance();
-        this.client = instance.getClient();
-    }
+  constructor() {
+    const instance = RedisClientService.getInstance();
+    this.client = instance.getClient();
+  }
 
-    async next(): Promise<number> {
-        await this.client.setNX('shortener:seq', '13999999');
-        const seq = await this.client.incr('shortener:seq');
-        return seq;
-    }
+  async next(): Promise<number> {
+    await this.client.setNX('shortener:seq', '13999999');
+    const seq = await this.client.incr('shortener:seq');
+    return seq;
+  }
 }

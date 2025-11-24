@@ -9,7 +9,7 @@ export class CreateShortenerUseCase {
     private shortenerRepository: IShortenerRepository,
     private shortCodeGenerator: IShortCodeGeneratorService,
     private hashidsService: IHashidsService,
-  ) { }
+  ) {}
 
   async execute(createUserDto: CreateShortenDto): Promise<Shortener> {
     const { longUrl } = createUserDto;

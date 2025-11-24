@@ -1,9 +1,9 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { CreateShortenerUseCase } from '@/app/use-case/shortener/create-shorten.use-case';
+import { GetShortenerUseCase } from '@/app/use-case/shortener/get-shorten.use-case';
 import { ShortenerRepositoryFactory } from '@/infra/factories/repositories/shortener-repository.factory';
 import { HashidsFactory } from '@/infra/factories/services/hashids.factory';
 import { ShortCodeGeneratorFactory } from '@/infra/factories/services/short-code-generator.factory';
-
 import { ValidationService } from '@/shared/validation/validation.service';
 import {
   type CreateShortenerValidator,
@@ -35,8 +35,27 @@ export class ShortenerController {
       });
 
       res.status(200).send({
-        short_url: `demontie.ly/${result.shortCode}`,
+        short_url: `http://localhost:3000/${result.shortCode}`,
       });
+    } catch (error: any) {
+      res.status(400).send({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  static async getShortener(req: FastifyRequest, res: FastifyReply) {
+    try {
+      const { shortCode } = req.params as any;
+
+      const getShortenerUseCase = new GetShortenerUseCase(
+        ShortenerRepositoryFactory.create(),
+        HashidsFactory.create(),
+      );
+      const shortener = await getShortenerUseCase.execute(shortCode);
+
+      return res.code(302).redirect(shortener.longUrl);
     } catch (error: any) {
       res.status(400).send({
         success: false,

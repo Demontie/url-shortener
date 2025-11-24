@@ -16,7 +16,6 @@ export class CreateShortenerUseCase {
 
     const nextCode = await this.shortCodeGenerator.next();
     const shortCode = this.hashidsService.encode(nextCode);
-
     const newShortener = Shortener.create({
       longUrl,
       shortCode,

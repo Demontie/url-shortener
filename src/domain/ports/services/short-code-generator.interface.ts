@@ -1,3 +1,3 @@
 export interface IShortCodeGeneratorService {
-    next(): Promise<number>;
+  next(): Promise<number>;
 }

@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  # app:
+  #   extends:
+  #     file: ./docker/application/docker-compose.yml
+  #     service: app
+
+  rabbitmq-service:
+    extends:
+      file: ./docker/rabbitmq/docker-compose.yml
+      service: rabbitmq-service
+
+  redis-service:
+    extends:
+      file: ./docker/redis/docker-compose.yml
+      service: redis-service    
+
+  cassandra10:
+    extends:
+      file: ./docker/cassandra/docker-compose.yml
+      service: cassandra10   
+       
+  cassandra-init:
+    extends:
+      file: ./docker/cassandra/docker-compose.yml
+      service: cassandra-init
+  # cassandra20:
+  #   extends:
+  #     file: ./docker/cassandra/docker-compose.yml
+  #     service: cassandra20  
+  # cassandra30:
+  #   extends:
+  #     file: ./docker/cassandra/docker-compose.yml
+  #     service: cassandra30              
+  # postgres-service:
+  #   extends:
+  #     file: ./docker/postgres/docker-compose.yml
+  #     service: postgres-service
+
+networks:
+  ms_new_boilerplate_network:
+
+volumes:
+  postgres_data:
+    driver: local  

@@ -1,0 +1,70 @@
+version: "3.8"
+
+services: 
+  cassandra10: 
+    image: cassandra:latest 
+    container_name: cassandra10 
+    restart: always
+    hostname: cassandra10 
+    networks: 
+      - ms_new_boilerplate_network
+    ports: 
+      - "9042:9042" 
+    environment: &environment  
+      CASSANDRA_SEEDS: "cassandra10,cassandra20"   
+      CASSANDRA_CLUSTER_NAME: MyTestCluster 
+      CASSANDRA_DC: DC1 
+      CASSANDRA_RACK: RACK1 
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch 
+      CASSANDRA_NUM_TOKENS: 128 
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s  
+      # JVM_EXTRA_OPTS: "-Xms256M -Xmx512M"
+#    mem_limit: 1g
+  cassandra-init:
+    image: cassandra:latest
+    container_name: cassandra-init
+    networks:
+      - ms_new_boilerplate_network
+    depends_on:
+      cassandra10:
+        condition: service_healthy
+    volumes:
+      - ./init:/init
+    entrypoint: ["bash", "-lc", "cqlsh cassandra10 9042 -f /init/001_create_keyspace.cql && cqlsh cassandra10 9042 -f /init/002_create_tables.cql"]
+    restart: "no"
+    
+  cassandra20: 
+    image: cassandra:latest 
+    container_name: cassandra20 
+    restart: always
+    hostname: cassandra20 
+    networks: 
+      - ms_new_boilerplate_network
+    ports: 
+      - "9043:9042" 
+    environment: *environment   
+    depends_on: 
+      cassandra10:  
+        condition: service_started 
+#   mem_limit: 1g
+
+  cassandra30: 
+    image: cassandra:latest 
+    container_name: cassandra30 
+    restart: always
+    hostname: cassandra30 
+    networks: 
+      - ms_new_boilerplate_network
+    ports: 
+      - "9044:9042" 
+    environment: *environment   
+    depends_on: 
+      cassandra20:   
+       condition: service_started
+#   mem_limit: 1g
+
